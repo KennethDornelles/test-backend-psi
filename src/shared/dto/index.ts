@@ -7,3 +7,6 @@ export { PsychologistResponseDto } from './psychologist-response.dto';
 export { CreateDoctorDto } from './create-doctor.dto';
 export { UpdateDoctorDto } from './update-doctor.dto';
 export { DoctorResponseDto } from './doctor-response.dto';
+export { CreatePatientDto } from './create-patient.dto';
+export { UpdatePatientDto } from './update-patient.dto';
+export { PatientResponseDto } from './patient-response.dto';

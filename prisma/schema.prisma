@@ -80,6 +80,7 @@ model Patient {
   @@map("patients")
 }
 
+
 model WorkingHours {
   id             String       @id @default(cuid())
   psychologistId String?      @unique

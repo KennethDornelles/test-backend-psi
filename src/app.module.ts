@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { UsersModule } from './shared/modules/users.module';
 import { PsychologistModule } from './shared/modules/psychologist.module';
 import { DoctorModule } from './shared/modules/doctor.module';
+import { PatientModule } from './shared/modules/patient.module';
 
 @Module({
-  imports: [UsersModule, PsychologistModule, DoctorModule],
+  imports: [UsersModule, PsychologistModule, DoctorModule, PatientModule],
   controllers: [AppController],
   providers: [AppService],
 })
