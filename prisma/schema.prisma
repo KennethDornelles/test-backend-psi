@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
+  CANCELLED
+}
+
+enum ConsultationType {
+  PSYCHOLOGICAL
+  MEDICAL
+}
+
+enum UserRole {
+  PSYCHOLOGIST
+  DOCTOR
+  ADMIN
+}
+
+// Modelos principais
+model Psychologist {
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  phone         String?
+  cpf           String        @unique
+  crp           String        @unique // Conselho Regional de Psicologia
+  workingHours  WorkingHours?
+  appointments  Appointment[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("psychologists")
+}
+
+model Doctor {
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  phone         String?
+  cpf           String        @unique
+  crm           String        @unique // Conselho Regional de Medicina
+  specialty     String        // Especialidade médica
+  workingHours  WorkingHours?
+  appointments  Appointment[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("doctors")
+}
+
+model Patient {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  phone        String?
+  cpf          String        @unique
+  birthDate    DateTime?
+  address      String?
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("patients")
+}
+
+model WorkingHours {
+  id             String       @id @default(cuid())
+  psychologistId String?      @unique
+  doctorId       String?      @unique
+  psychologist   Psychologist? @relation(fields: [psychologistId], references: [id])
+  doctor         Doctor?      @relation(fields: [doctorId], references: [id])
+  startTime      String       // "08:00"
+  endTime        String       // "18:00"
+  workDays       Int[]        // [1,2,3,4,5] - Segunda a Sexta
+  lunchStart     String?      // "12:00" - Início do almoço
+  lunchEnd       String?      // "13:00" - Fim do almoço
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@map("working_hours")
+}
+
+model Appointment {
+  id               String            @id @default(cuid())
+  psychologistId   String?
+  doctorId         String?
+  patientId        String
+  psychologist     Psychologist?     @relation(fields: [psychologistId], references: [id])
+  doctor           Doctor?           @relation(fields: [doctorId], references: [id])
+  patient          Patient           @relation(fields: [patientId], references: [id])
+  patientName      String            // Nome do paciente no momento do agendamento
+  patientEmail     String            // Email do paciente no momento do agendamento
+  patientPhone     String?           // Telefone do paciente no momento do agendamento
+  scheduledAt      DateTime
+  duration         Int               @default(60) // Duração em minutos
+  consultationType ConsultationType
+  status           AppointmentStatus @default(PENDING)
+  notes            String?           // Observações do profissional
+  cancellationReason String?         // Motivo do cancelamento
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@unique([psychologistId, scheduledAt])
+  @@unique([doctorId, scheduledAt])
+  @@map("appointments")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      UserRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
