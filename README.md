@@ -1,98 +1,98 @@
+# 🏥 PSI API - Sistema de Agendamento de Consultas
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<p align="center">Sistema de agendamento de consultas psicológicas e médicas desenvolvido com NestJS, PostgreSQL e AWS SQS.</p>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Tecnologias Utilizadas
 
-## Description
+- **Framework**: NestJS
+- **Linguagem**: TypeScript
+- **Banco de Dados**: PostgreSQL
+- **ORM**: Prisma
+- **Mensageria**: AWS SQS
+- **Gerenciador de Pacotes**: Bun
+- **Autenticação**: JWT
+- **Validação**: Zod + class-validator
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
+### Desafio Técnico: Agendamento de Consultas Online
 
-## Project setup
+O objetivo deste desafio é desenvolver uma API que simule o agendamento de consultas, utilizando um fluxo assíncrono para processar as requisições. O teste avalia a habilidade do candidato em trabalhar com **NestJS**, **Typescript**, **AWS SQS** e **filas**, além de modelagem de dados com **Prisma**.
 
-```bash
-$ npm install
-```
+---
 
-## Compile and run the project
+### Requisitos
 
-```bash
-# development
-$ npm run start
+#### 1. Tecnologia e Configuração
 
-# watch mode
-$ npm run start:dev
+* **Linguagem**: TypeScript
+* **Framework**: NestJS
+* **Gerenciador de Pacotes**: Bun
+* **Banco de Dados**: PostgreSQL (ou similar)
+* **ORM**: Prisma
+* **Mensageria/Fila**: AWS SQS
 
-# production mode
-$ npm run start:prod
-```
+---
 
-## Run tests
+#### 2. Fluxo de Agendamento
 
-```bash
-# unit tests
-$ npm run test
+A API deve ter um endpoint principal para agendar consultas (`POST /appointments`). Ao receber uma requisição, a API não deve salvar a consulta no banco de dados imediatamente. Em vez disso, ela deve publicar uma mensagem em uma fila do **AWS SQS**.
 
-# e2e tests
-$ npm run test:e2e
+Um serviço de consumidor (consumer) deve ser responsável por processar as mensagens dessa fila. O consumidor deve:
+* Validar se o horário e a data estão disponíveis para o psicólogo.
+* Se a validação for aprovada, salvar a consulta no banco de dados.
 
-# test coverage
-$ npm run test:cov
-```
+---
 
-## Deployment
+#### Requisitos para a vaga
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+1.  **Endpoints**:
+    * `POST /appointments`: Cria um novo agendamento. Retorne uma resposta rápida (`202 Accepted`) após publicar a mensagem na fila.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+2.  **Lógica de Fila**:
+    * O endpoint `POST /appointments` deve publicar uma mensagem para uma fila do **SQS**.
+    * Crie um serviço que "escuta" essa fila.
+    * A lógica de negócio deve residir no consumidor, que é quem valida e persiste os dados.
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+3.  **Validação**:
+    * No consumidor, verifique a disponibilidade do psicólogo para o agendamento.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+#### Extras
 
-Check out a few resources that may come in handy when working with NestJS:
+1.  **Notificações e Retorno**:
+    * Após o processamento da fila, o consumidor deve emitir uma notificação (pode ser um log) para o cliente, informando se a consulta foi `confirmed` ou `declined`.
+    * Se a consulta for `confirmed`, a notificação deve ser `Your appointment has been confirmed.`.
+    * Se for `declined` (por indisponibilidade), a notificação deve ser `Sorry, the time you chose is no longer available.`.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+2.  **Validações de Negócio Adicionais**:
+    * Inclua uma validação que impeça agendamentos com menos de 24 horas de antecedência.
+    * Adicione uma validação que considere o horário de trabalho do psicólogo (e.g., segunda a sexta, das 8h às 18h).
 
-## Support
+3.  **Tratamento de Erros e Logs**:
+    * Implemente um sistema de retentativa para mensagens que falharem ao serem processadas.
+    * Utilize um logger para registrar as etapas do processo: recebimento da requisição, publicação na fila e resultado do processamento.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+### Entrega
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+* Um repositório no GitHub com o projeto completo.
+* Um arquivo `README.md` detalhado, contendo:
+    * Instruções claras sobre como configurar e executar o projeto.
+    * Explicação das escolhas de arquitetura e design.
+    * **Justificativa da escolha do SQS, comparando-o a um broker como RabbitMQ**.
+    * Exemplo de payload para o endpoint `POST /appointments`.
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Critérios de Avaliação
+
+* **Qualidade do Código**: Legibilidade, organização, convenções de código e uso correto de TypeScript.
+* **Arquitetura**: Separação de responsabilidades, modularização e uso de design patterns.
+* **Gerenciamento de Assincronismo**: Uso eficiente e correto de filas e mensageria.
+* **Testes**: Cobertura de testes unitários e de integração (um grande diferencial).
+* **Modelagem de Dados**: Como as entidades e seus relacionamentos foram definidos para resolver o problema.
