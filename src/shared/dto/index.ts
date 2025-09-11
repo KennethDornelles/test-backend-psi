@@ -1,3 +1,9 @@
 export { CreateUserDto } from './create-user.dto';
 export { UpdateUserDto } from './update-user.dto';
 export { UserResponseDto } from './user-response.dto';
+export { CreatePsychologistDto } from './create-psychologist.dto';
+export { UpdatePsychologistDto } from './update-psychologist.dto';
+export { PsychologistResponseDto } from './psychologist-response.dto';
+export { CreateDoctorDto } from './create-doctor.dto';
+export { UpdateDoctorDto } from './update-doctor.dto';
+export { DoctorResponseDto } from './doctor-response.dto';
