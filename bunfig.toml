@@ -1,0 +1,16 @@
+[test]
+# Configuração para testes
+preload = ["./test/setup.ts"]
+
+# Padrões de arquivos de teste
+testNamePattern = ".*\\.spec\\.ts$"
+
+# Configuração de cobertura
+coverage = true
+coverageDir = "coverage"
+
+# Configuração de timeout
+timeout = 10000
+
+# Configuração de ambiente
+env = "test"
