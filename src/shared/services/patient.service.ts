@@ -12,7 +12,9 @@ import { PatientResponseDto } from '../dto/patient-response.dto';
 export class PatientService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createPatientDto: CreatePatientDto): Promise<PatientResponseDto> {
+  async create(
+    createPatientDto: CreatePatientDto,
+  ): Promise<PatientResponseDto> {
     try {
       // Verificar se o email já existe
       const existingPatientByEmail = await this.prisma.patient.findUnique({
@@ -35,8 +37,8 @@ export class PatientService {
       const patient = await this.prisma.patient.create({
         data: {
           ...createPatientDto,
-          birthDate: createPatientDto.birthDate 
-            ? new Date(createPatientDto.birthDate) 
+          birthDate: createPatientDto.birthDate
+            ? new Date(createPatientDto.birthDate)
             : undefined,
         },
       });
@@ -144,7 +146,10 @@ export class PatientService {
       }
 
       // Se estiver atualizando o CPF, verificar se já existe
-      if (updatePatientDto.cpf && updatePatientDto.cpf !== existingPatient.cpf) {
+      if (
+        updatePatientDto.cpf &&
+        updatePatientDto.cpf !== existingPatient.cpf
+      ) {
         const cpfExists = await this.prisma.patient.findUnique({
           where: { cpf: updatePatientDto.cpf },
         });
@@ -158,8 +163,8 @@ export class PatientService {
         where: { id },
         data: {
           ...updatePatientDto,
-          birthDate: updatePatientDto.birthDate 
-            ? new Date(updatePatientDto.birthDate) 
+          birthDate: updatePatientDto.birthDate
+            ? new Date(updatePatientDto.birthDate)
             : undefined,
         },
       });
